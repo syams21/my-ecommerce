@@ -1,22 +1,43 @@
+import Product from "@/components/Product";
+import { useEffect, useState } from "react";
+
 export default function Home() {
+  const [productsInfo, setProductsInfo] = useState([]);
+  const [phrase, setPhrase] = useState('');
+  useEffect(() => {
+    fetch('/api/products')
+    .then(response => response.json())
+    .then(json => setProductsInfo(json));
+  }, []);
+
+  const categoriesName = [...new Set(productsInfo.map(p => p.category))];
+  console.log({categoriesName});
+
+  let products;
+  if (phrase) {
+    products = productsInfo.filter(p => p.name.toLowerCase().includes(phrase));
+  } else {
+    products = productsInfo;
+  }
+
   return (
     <div className="p-5">
+      <input value={phrase} onChange={e => setPhrase(e.target.value)} type="text" placeholder="Search for products..." className="w-full py-2 px-4 rounded-3xl text-black"></input>
       <div>
-        <h2 className="text-2xl mb-4">Mobiles</h2>
-        <div className="pw-4">
-          <div className="w-96">
-            <div className="bg-gray-900 rounded-xl">
-              <img src="/products/iphone12.png" alt=""></img>
-            </div>
-            <div className="mt-2">
-              <h3 className="font-bold text-lg">Iphone 12</h3>
-            </div>
-            <p className="text-sm mt-2 leading-5">Aliqua ad aliquip velit eiusmod amet incididunt magna qui non. Non duis Lorem aute sunt officia et fugiat consequat incididunt officia.</p>
-            <div className="flex mt-2">
-              <div className="text-xl font-bold grow">Rp 10.299.000</div>
-              <button className="bg-emerald-400 py-1 px-3 rounded-md">add to chart</button>
-            </div>
+        {categoriesName.map(categoriesName => (
+          <div key={categoriesName}>
+            <h2 className="text-2xl py-5 capitalize">{categoriesName}</h2>
+              <div className="flex -mx-5 overflow-x-scroll scrollbar-hide">
+                {products.filter(p => p.category === categoriesName).map(productsInfo => (
+                  <div key={productsInfo._id} className="px-5 snap-start">
+                    <Product {...productsInfo}></Product>
+                  </div>
+                ))}
+              </div>
           </div>
+        ))}
+        <div className="pw-4">
+          
         </div>
       </div>
     </div>
