@@ -1,45 +1,51 @@
 import Product from "@/components/Product";
+import { initMongoose } from "@/lib/mongoose";
 import { useEffect, useState } from "react";
+import { findAllProducts } from "./api/products";
+import Footer from "@/components/Footer";
+import Layout from "@/components/Layout";
 
-export default function Home() {
-  const [productsInfo, setProductsInfo] = useState([]);
+export default function Home({products}) {
   const [phrase, setPhrase] = useState('');
-  useEffect(() => {
-    fetch('/api/products')
-    .then(response => response.json())
-    .then(json => setProductsInfo(json));
-  }, []);
 
-  const categoriesName = [...new Set(productsInfo.map(p => p.category))];
-  console.log({categoriesName});
+  const categoriesName = [...new Set(products.map(p => p.category))];
 
-  let products;
   if (phrase) {
-    products = productsInfo.filter(p => p.name.toLowerCase().includes(phrase));
-  } else {
-    products = productsInfo;
+    products = products.filter(p => p.name.toLowerCase().includes(phrase));
   }
 
   return (
-    <div className="p-5">
+    <Layout>
       <input value={phrase} onChange={e => setPhrase(e.target.value)} type="text" placeholder="Search for products..." className="w-full py-2 px-4 rounded-3xl text-black"></input>
       <div>
         {categoriesName.map(categoriesName => (
           <div key={categoriesName}>
-            <h2 className="text-2xl py-5 capitalize">{categoriesName}</h2>
-              <div className="flex -mx-5 overflow-x-scroll scrollbar-hide">
-                {products.filter(p => p.category === categoriesName).map(productsInfo => (
-                  <div key={productsInfo._id} className="px-5 snap-start">
-                    <Product {...productsInfo}></Product>
+            {products.find(p => p.category === categoriesName) && (
+              <div>
+                <h2 className="text-2xl py-5 capitalize">{categoriesName}</h2>
+                  <div className="flex -mx-5 overflow-x-scroll scrollbar-hide">
+                    {products.filter(p => p.category === categoriesName).map(productsInfo => (
+                      <div key={productsInfo._id} className="px-5 snap-start">
+                        <Product {...productsInfo}></Product>
+                      </div>
+                    ))}
                   </div>
-                ))}
               </div>
+            )}
           </div>
         ))}
-        <div className="pw-4">
-          
-        </div>
       </div>
-    </div>
+
+    </Layout>
   )
+}
+
+export async function getServerSideProps() {
+  await initMongoose();
+  const products = await findAllProducts();
+  return {
+    props: {
+      products: JSON.parse(JSON.stringify(products)),
+    },
+  };
 }
