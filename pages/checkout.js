@@ -31,7 +31,6 @@ export default function CheckoutPage() {
     }
 
     const deliveryPrice = 30000;
-
     let subtotal = 0;
     if (selectedProducts?.length) {
         for (let id of selectedProducts) {
