@@ -15,7 +15,6 @@ export default async function handler(req,res) {
         const paymentStatus = event.data?.object?.payment_status;
         if (metadata?.orderId && paymentStatus === 'paid') {
             await Order.findByIdAndUpdate(metadata.orderId, {paid:1});
-
         }
     }
     res.json('ok')
@@ -24,6 +23,5 @@ export default async function handler(req,res) {
 export const config = {
     api: {
         bodyParser: false,
-
     }
 }
