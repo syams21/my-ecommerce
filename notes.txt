@@ -1,0 +1,10 @@
+--- terminal ---
+[command] npm run dev
+
+--- cmd ---
+go to path of stipe: C:\Program Files\Stripe>stripe.exe
+[command] stripe login
+enter go browser from link (the key maybe is change after 90days)
+granted the access
+[command] stripe listen --forward-to localhost:3000/api/webhook
+//in the cmd, after connecting to the stripe api, the response will be [200] if it works
